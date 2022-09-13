@@ -120,7 +120,7 @@ data$clusterID<- as.factor(data$clusterID)
 # Section to save data.unique, so that we have all the data.
 write.csv(data, 'Data/dataAllTracks_unique_k3.csv')
 # Uncomment below if want to read in
-#data.unique <- read.csv('dataUniqueWithClusters2.csv')
+#data.unique <- read.csv('studyDataUniqueWithClusters3.csv')
 
 # Add descriptive stats per K-means ----
 
