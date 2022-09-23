@@ -39,6 +39,8 @@ data.unique <- data.all[!dupIndex,]
 
 data <- data.unique
 
+# Write a file to only have
+
 # Do K-means on the de-duplicated sleep data ----
 
 
@@ -118,9 +120,9 @@ data$clusterID <- kmeans.labels
 data$clusterID<- as.factor(data$clusterID)
 
 # Section to save data.unique, so that we have all the data.
-write.csv(data, 'Data/dataAllTracks_unique_k3.csv')
+write.csv(data, 'Data/SPD_unique_withClusters.csv')
 # Uncomment below if want to read in
-#data.unique <- read.csv('dataUniqueWithClusters3.csv')
+# data.unique <- read.csv('dataUniqueWithClusters.csv')
 
 # Add descriptive stats per K-means ----
 
