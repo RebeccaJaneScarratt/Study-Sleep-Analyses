@@ -19,7 +19,7 @@ current_path = rstudioapi::getActiveDocumentContext()$path
 setwd(dirname(current_path ))
 
 
-data.all<-read.csv('Data/CleanedData_AllTracks.csv')
+data.all<-read.csv('CleanedData_AllTracks.csv')
 
 
 # Set data types
@@ -107,29 +107,29 @@ plotForK8 <- fviz_cluster(thisK, data=dFC.s)
 plotForK8
 
 
-write(wcss, file='Data/kMeansWCSS.csv')
+write(wcss, file='Cluster Analysis/kMeansWCSS.csv')
 # Why did we choose 3 in the end? Is that dependent on the results of the wcss?
 
 # Fitting K-Means to the dataset
 kmeans = kmeans(x = dFC.s, centers = 3, iter.max=20000)
 kmeans.labels = kmeans$cluster
 
-write(kmeans$centers, file='Data/kMeans_centers_k3.csv')
+write(kmeans$centers, file='Cluster Analysis/kMeans_centers_k3.csv')
 
 data$clusterID <- kmeans.labels
 data$clusterID<- as.factor(data$clusterID)
 
 # Section to save data.unique, so that we have all the data.
-write.csv(data, 'Data/SPD_unique_withClusters.csv')
+write.csv(data, 'SPD_unique_withClusters.csv')
 # Uncomment below if want to read in
-# data.unique <- read.csv('dataUniqueWithClusters.csv')
+# data.unique <- read.csv('SPD_unique_withClusters.csv')
 
 # Add descriptive stats per K-means ----
 
 descriptiveClusters <- describeBy(data[c(15:23)], data$clusterID, IQR=TRUE, fast=FALSE)
-write.csv(descriptiveClusters[1], 'Data/c1_Descriptive.csv')
-write.csv(descriptiveClusters[2], 'Data/c2_Descriptive.csv')
-write.csv(descriptiveClusters[3], 'Data/c3_Descriptive.csv')
+write.csv(descriptiveClusters[1], 'Cluster Analysis/c1_Descriptive.csv')
+write.csv(descriptiveClusters[2], 'Cluster Analysis/c2_Descriptive.csv')
+write.csv(descriptiveClusters[3], 'Cluster Analysis/c3_Descriptive.csv')
 
 
 # Now make a table with median values per cluster
@@ -153,4 +153,4 @@ colnames(medianDF) <- c('Cluster1', 'Cluster2', 'Cluster3')
 rownames(medianDF) <- c('danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness',
                         'liveness', 'valence', 'tempo')
 
-write.csv(t(medianDF), 'Data/ClustersMedian3.csv')
+write.csv(t(medianDF), 'Cluster Analysis/ClustersMedian3.csv')
