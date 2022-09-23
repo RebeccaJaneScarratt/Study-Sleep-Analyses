@@ -9,12 +9,15 @@ Created on Thu Dec  9 08:17:08 2021
 # for handling data
 import pandas as pd
 import numpy as np
+import os 
+
+os.chdir('C:\\Users\\au672599\\OneDrive - Aarhus Universitet\\Documents\\PhD Rebecca\\SpotifyStudyMusic')
 
 
 
 #%% Load some data
 
-data = pd.read_csv('Data/SPD_withClusters.csv', encoding='UTF-8', na_values='')
+data = pd.read_csv('Data/SPD_withClusters_and_reducedGenre.csv', encoding='UTF-8', na_values='')
 allGenres = data['Genres']
 
 largeGenres = ['electronic',
@@ -117,6 +120,7 @@ data['reducedGenre'] = data.apply(lambda row: reduceGenre(row['Genres'], largeGe
 
 data['reducedGenre'].value_counts()
 
+genres_in_sleep = data['reducedGenre'].value_counts()
 
 uncategorized = data[data['reducedGenre']=='uncategorized']
 
@@ -129,3 +133,9 @@ for genre in uncategorized['Genres']:
 
 uncatGenresDF = pd.DataFrame(data=uncatGenres)
 count = uncatGenresDF[0].value_counts()
+
+#%% Make new files
+
+genres_in_sleep.to_csv('Genres_in_Sleep.csv')
+
+data.to_csv('SPD_withClusters_and_reducedGenre.csv')
