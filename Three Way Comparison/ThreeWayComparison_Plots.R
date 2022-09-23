@@ -27,7 +27,7 @@ current_path = rstudioapi::getActiveDocumentContext()$path
 setwd(dirname(current_path ))
 
 # Read data
-data.unique <- read.csv('Data/SSM_unique_withClusters.csv')
+data.unique <- read.csv('SSM_unique_withClusters.csv')
 
 # Remember to drop those the X columns.
 
@@ -40,8 +40,8 @@ data.unique <- subset(data.unique, select = -c(X))
 # https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge
 
 
-mssdFiles <- c('Data/tf_000000000000.csv',
-               'Data/tf_000000000001.csv')
+mssdFiles <- c('tf_000000000000.csv',
+               'tf_000000000001.csv')
 mssd <- do.call(rbind, lapply(mssdFiles, fread))
 
 # Subset to keep only the features we're interested in
@@ -69,7 +69,7 @@ data.unique$weight <- ratio
 
 # now read in the sleep data here already
 
-spd <- read.csv('Data/SPD_unique_withClusters.csv')
+spd <- read.csv('SPD_unique_withClusters.csv')
 spd$category <- 'Sleep'
 spd$weight <- dim(mssd)[1]/dim(spd)[1]
 
@@ -94,9 +94,9 @@ mergedData$category <- factor(mergedData$category, levels = c('General', 'Study'
 # Descriptive stats ----
 
 descriptive <- describeBy(mergedData[c(3:12)], mergedData$category, IQR=TRUE, fast=FALSE)
-write.csv(descriptive[1], 'Data/generalDescriptive.csv')
-write.csv(descriptive[2], 'Data/studyDescriptive.csv')
-write.csv(descriptive[3], 'Data/sleepDescriptive.csv')
+write.csv(descriptive[1], 'Three Way Comparison/generalDescriptive.csv')
+write.csv(descriptive[2], 'Three Way Comparison/studyDescriptive.csv')
+write.csv(descriptive[3], 'Three Way Comparison/sleepDescriptive.csv')
 
 # Statistics ----
 
@@ -485,12 +485,12 @@ statResults <- rbind.fill(statResults, thisResult)
 names(statResults)[names(statResults) == '.y.'] <- 'AudioFeature'
 statResults = adjust_pvalue(statResults, p.col='p', output.col = 'BONFERRONI', method='bonferroni')
 
-write.csv(statResults, 'Data/AllComparisons_Statistics.csv')
+write.csv(statResults, 'Three Way Comparison/AllComparisons_Statistics.csv')
 
 # Plotting ----
 # read in statResults if you want to start from here
 
-statResults <- read.csv('Data/AllComparisons_Statistics.csv')
+statResults <- read.csv('Three Way Comparison/AllComparisons_Statistics.csv')
 
 # manually fill in the significance starts for some of the tests
 statResults[4,11] <- '****'
@@ -545,7 +545,7 @@ p <- ggplot(subset(meltData, variable=='danceability'),aes(x=category, y=value, 
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Danceability') +
   theme(text = element_text(size=12))
-ggsave('Plots/danceability.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/danceability.pdf', width = w, height = h, dpi=dpi)
 
 
 #loudness
@@ -570,7 +570,7 @@ p <- ggplot(subset(meltData, variable=='loudness'),aes(x=category, y=value, fill
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Loudness') +
   theme(text = element_text(size=12))
-ggsave('Plots/loudness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/loudness.pdf', width = w, height = h, dpi=dpi)
 
 #energy
 theseStats = subset(statResults, AudioFeature == 'energy')
@@ -594,7 +594,7 @@ p <- ggplot(subset(meltData, variable=='energy'),aes(x=category, y=value, fill =
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Energy') +
   theme(text = element_text(size=12))
-ggsave('Plots/energy.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/energy.pdf', width = w, height = h, dpi=dpi)
 
 
 #valence 
@@ -619,7 +619,7 @@ p <- ggplot(subset(meltData, variable=='valence'),aes(x=category, y=value, fill 
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Valence') +
   theme(text = element_text(size=12))
-ggsave('Plots/valence.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/valence.pdf', width = w, height = h, dpi=dpi)
 
 
 
@@ -645,7 +645,7 @@ p <- ggplot(subset(meltData, variable=='speechiness'),aes(x=category, y=value, f
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Speechiness') +
   theme(text = element_text(size=12))
-ggsave('Plots/speechiness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/speechiness.pdf', width = w, height = h, dpi=dpi)
 
 
 #liveness 
@@ -670,7 +670,7 @@ p <- ggplot(subset(meltData, variable=='liveness'),aes(x=category, y=value, fill
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Liveness') +
   theme(text = element_text(size=12))
-ggsave('Plots/liveness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/liveness.pdf', width = w, height = h, dpi=dpi)
 
 
 
@@ -696,7 +696,7 @@ p <- ggplot(subset(meltData, variable=='tempo'),aes(x=category, y=value, fill = 
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Tempo') +
   theme(text = element_text(size=12))
-ggsave('Plots/tempo.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/tempo.pdf', width = w, height = h, dpi=dpi)
 
 
 
@@ -730,7 +730,7 @@ p <- ggplot(instrDF, aes(x=category, y=Freq, fill=instrRound))+
   theme(text = element_text(size=12)) +
   labs(colour = 'instrRound')
 p
-ggsave('Plots/instrumentalness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/instrumentalness.pdf', width = w, height = h, dpi=dpi)
 
 
 
@@ -768,4 +768,4 @@ p <- ggplot(acoDF, aes(x=category, y=Freq, fill=acoRound))+
   ggtitle('Acousticness') +
   theme(text = element_text(size=12))
 p
-ggsave('Plots/acousticness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/acousticness.pdf', width = w, height = h, dpi=dpi)
