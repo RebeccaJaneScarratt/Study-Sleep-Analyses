@@ -17,7 +17,7 @@ os.chdir('C:\\Users\\au672599\\OneDrive - Aarhus Universitet\\Documents\\GitHub\
 #%% Load some data
 
 study_data = pd.read_csv('SSM_unique_withClusters.csv', encoding='UTF-8', na_values='')
-sleep_data = pd.read_csv('SPD_withClusters.csv', encoding='UTF-8', na_values='')
+sleep_data = pd.read_csv('SPD_unique_withClusters.csv', encoding='UTF-8', na_values='')
 
 #allGenres_sleep = sleep_data['Genres']
 #allGenres_study = study_data['Genres']
@@ -143,5 +143,5 @@ genres_in_study = study_data['reducedGenre'].value_counts()
 genres_in_study.to_csv('Genre Analysis/Genres_in_Study.csv')
 genres_in_sleep.to_csv('Genre Analysis/Genres_in_Sleep.csv')
 
-sleep_data.to_csv('SPD_withClusters_and_reducedGenre.csv')
-study_data.to_csv('SSM_withClusters_and_reducedGenre.csv')
+sleep_data.to_csv('SPD_unique_withClusters_and_reducedGenre.csv')
+study_data.to_csv('SSM_unique_withClusters_and_reducedGenre.csv')
