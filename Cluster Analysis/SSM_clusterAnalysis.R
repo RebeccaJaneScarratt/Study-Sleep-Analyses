@@ -21,7 +21,6 @@ setwd(dirname(current_path ))
 
 data.all<-read.csv('CleanedData_AllTracks.csv')
 
-
 # Set data types
 data.all$X <- NULL
 data.all$X.1 <- NULL
@@ -39,9 +38,11 @@ data.unique <- data.all[!dupIndex,]
 
 data <- data.unique
 
-# Write a file to only have
+# Write a file to only have unique dataset
 
-# Do K-means on the de-duplicated sleep data ----
+# write(data.unique, 'SSM_unique_withClusters.csv')
+
+# Do K-means on the de-duplicated study data ----
 
 
 # Sub divisions for Clustering
@@ -82,33 +83,12 @@ plot(1:10,
 
 # Going for cluster plots instead
 library(factoextra)
-thisK <- kmeans(x = dFC.s, centers = 2, iter.max=20000)
-plotForK2 <- fviz_cluster(thisK, data=dFC.s)
-plotForK2
-
-
-
 
 thisK <- kmeans(x = dFC.s, centers = 3, iter.max=20000)
 plotForK3 <- fviz_cluster(thisK, data=dFC.s)
 plotForK3
 
-thisK <- kmeans(x = dFC.s, centers = 4, iter.max=20000)
-plotForK4 <- fviz_cluster(thisK, data=dFC.s)
-plotForK4
-
-
-thisK <- kmeans(x = dFC.s, centers = 5, iter.max=20000)
-plotForK5 <- fviz_cluster(thisK, data=dFC.s)
-plotForK5
-
-thisK <- kmeans(x = dFC.s, centers = 8, iter.max=20000)
-plotForK8 <- fviz_cluster(thisK, data=dFC.s)
-plotForK8
-
-
-write(wcss, file='Cluster Analysis/kMeansWCSS.csv')
-# Why did we choose 3 in the end? Is that dependent on the results of the wcss?
+#write(wcss, file='Cluster Analysis/kMeansWCSS.csv')
 
 # Fitting K-Means to the dataset
 kmeans = kmeans(x = dFC.s, centers = 3, iter.max=20000)
@@ -120,9 +100,9 @@ data$clusterID <- kmeans.labels
 data$clusterID<- as.factor(data$clusterID)
 
 # Section to save data.unique, so that we have all the data.
-write.csv(data, 'SPD_unique_withClusters.csv')
+write.csv(data, 'SSM_unique_withClusters.csv')
 # Uncomment below if want to read in
-# data.unique <- read.csv('SPD_unique_withClusters.csv')
+# data.unique <- read.csv('SSM_unique_withClusters.csv')
 
 # Add descriptive stats per K-means ----
 
@@ -153,4 +133,4 @@ colnames(medianDF) <- c('Cluster1', 'Cluster2', 'Cluster3')
 rownames(medianDF) <- c('danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness',
                         'liveness', 'valence', 'tempo')
 
-write.csv(t(medianDF), 'Cluster Analysis/ClustersMedian3.csv')
+write.csv(t(medianDF), 'Cluster Analysis/ClustersMedian.csv')

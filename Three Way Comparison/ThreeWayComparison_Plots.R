@@ -94,9 +94,9 @@ mergedData$category <- factor(mergedData$category, levels = c('General', 'Study'
 # Descriptive stats ----
 
 descriptive <- describeBy(mergedData[c(3:12)], mergedData$category, IQR=TRUE, fast=FALSE)
-write.csv(descriptive[1], 'Three Way Comparison/generalDescriptive.csv')
-write.csv(descriptive[2], 'Three Way Comparison/studyDescriptive.csv')
-write.csv(descriptive[3], 'Three Way Comparison/sleepDescriptive.csv')
+write.csv(descriptive[1], 'Three Way Comparison/generalDescriptive_1312.csv')
+write.csv(descriptive[2], 'Three Way Comparison/studyDescriptive_1312.csv')
+write.csv(descriptive[3], 'Three Way Comparison/sleepDescriptive_1312.csv')
 
 # Statistics ----
 
@@ -491,20 +491,27 @@ write.csv(statResults, 'Three Way Comparison/AllComparisons_Statistics.csv')
 # read in statResults if you want to start from here
 
 statResults <- read.csv('Three Way Comparison/AllComparisons_Statistics.csv')
+statResults <- subset(statResults, select = -c(X))
 
-# manually fill in the significance starts for some of the tests
-statResults[4,11] <- '****'
-statResults[5,11] <- '****'
-statResults[6,11] <- 'ns'
-statResults[7,11] <- '****'
-statResults[8,11] <- '****'
-statResults[9,11] <- '****'
+# manually fill in the significance stars for some of the tests
+statResults[4,10] <- '****'
+statResults[5,10] <- '****'
+statResults[6,10] <- 'ns'
+statResults[7,10] <- '****'
+statResults[8,10] <- '****'
+statResults[9,10] <- '****'
 
 
 
 # Please obtain the RainCloudPlots files from the RainCloudPlots repository,
 # and place them according to the relative path of the script.
 # Instructions here: https://github.com/RainCloudPlots/RainCloudPlots
+if (!require(remotes)) {
+  install.packages("remotes")
+}
+remotes::install_github('jorvlan/raincloudplots')
+
+library(raincloudplots)
 source("RainCloudPlots-master/tutorial_R/R_rainclouds.R")
 source("RainCloudPlots-master/tutorial_R/summarySE.R")
 library(ggsignif)
@@ -524,14 +531,23 @@ meltData <- melt(subset(mergedData, id=c('category')))
 # danceability
 # lets just do significance stars
 
+install.packages( c( "dplyr", "ggplot2", "plyr" ) )
+
 theseStats = subset(statResults, AudioFeature == 'danceability')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 p <- ggplot(subset(meltData, variable=='danceability'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Danceability (0-1)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -545,18 +561,25 @@ p <- ggplot(subset(meltData, variable=='danceability'),aes(x=category, y=value, 
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Danceability') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/danceability.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/danceability1312.pdf', width = w, height = h, dpi=dpi)
 
 
 #loudness
 theseStats = subset(statResults, AudioFeature == 'loudness')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 p <- ggplot(subset(meltData, variable=='loudness'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Loudness (dB)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -570,17 +593,25 @@ p <- ggplot(subset(meltData, variable=='loudness'),aes(x=category, y=value, fill
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Loudness') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/loudness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/loudness1312.pdf', width = w, height = h, dpi=dpi)
 
 #energy
 theseStats = subset(statResults, AudioFeature == 'energy')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
+
 
 p <- ggplot(subset(meltData, variable=='energy'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Energy (0-1)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -594,18 +625,25 @@ p <- ggplot(subset(meltData, variable=='energy'),aes(x=category, y=value, fill =
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Energy') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/energy.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/energy1312.pdf', width = w, height = h, dpi=dpi)
 
 
 #valence 
 theseStats = subset(statResults, AudioFeature == 'valence')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 p <- ggplot(subset(meltData, variable=='valence'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Valence (1=positive)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -619,19 +657,27 @@ p <- ggplot(subset(meltData, variable=='valence'),aes(x=category, y=value, fill 
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Valence') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/valence.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/valence1312.pdf', width = w, height = h, dpi=dpi)
 
 
 
 #speechiness 
 theseStats = subset(statResults, AudioFeature == 'speechiness')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
+
 
 p <- ggplot(subset(meltData, variable=='speechiness'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Speechiness (0-1)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -645,18 +691,25 @@ p <- ggplot(subset(meltData, variable=='speechiness'),aes(x=category, y=value, f
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Speechiness') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/speechiness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/speechiness1312.pdf', width = w, height = h, dpi=dpi)
 
 
 #liveness 
 theseStats = subset(statResults, AudioFeature == 'liveness')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 p <- ggplot(subset(meltData, variable=='liveness'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Liveness (0-1)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -670,19 +723,26 @@ p <- ggplot(subset(meltData, variable=='liveness'),aes(x=category, y=value, fill
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Liveness') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/liveness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/liveness1312.pdf', width = w, height = h, dpi=dpi)
 
 
 
 #tempo 
 theseStats = subset(statResults, AudioFeature == 'tempo')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 p <- ggplot(subset(meltData, variable=='tempo'),aes(x=category, y=value, fill = category))+
   geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('')+xlab('')+
+  ylab('Tempo (bpm)')+xlab('')+
   geom_signif(
     comparisons = list(
       c('General', 'Study'),
@@ -696,15 +756,21 @@ p <- ggplot(subset(meltData, variable=='tempo'),aes(x=category, y=value, fill = 
   scale_fill_brewer(palette = "Dark2")+
   ggtitle('Tempo') +
   theme(text = element_text(size=12))
-ggsave('Three Way Comparison/tempo.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/tempo1312.pdf', width = w, height = h, dpi=dpi)
 
 
 
 # now the bars
 #instrumentalness 
 theseStats = subset(statResults, AudioFeature == 'instrumentalness')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
-
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 instrDF <- as.data.frame(instrTableProp)
 
@@ -713,7 +779,7 @@ p <- ggplot(instrDF, aes(x=category, y=Freq, fill=instrRound))+
   #geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   #geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('Percentage')+xlab('')+
+  ylab('Percentage of instrumentalness')+xlab('')+
   geom_signif(
     y_position = c(1.1, 1.18, 1.26),
     comparisons = list(
@@ -730,14 +796,20 @@ p <- ggplot(instrDF, aes(x=category, y=Freq, fill=instrRound))+
   theme(text = element_text(size=12)) +
   labs(colour = 'instrRound')
 p
-ggsave('Three Way Comparison/instrumentalness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/instrumentalness1312.pdf', width = w, height = h, dpi=dpi)
 
 
 
 #acousticness 
 theseStats = subset(statResults, AudioFeature == 'acousticness')
-statAnnotation = c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
-
+effsize = c(theseStats['effsize'][2,1],theseStats['effsize'][3,1], theseStats['effsize'][1,1])
+effsize = round(effsize, digits = 2)
+sign=c(theseStats['p.adj.signif'][2,1], theseStats['p.adj.signif'][3,1], theseStats['p.adj.signif'][1,1])
+bracket = data.frame(') ')
+statAnnotation = data.frame(effsize, sign, bracket)
+statAnnotation$both = paste(statAnnotation$sign, statAnnotation$effsize, sep= ' (') 
+statAnnotation$three = paste(statAnnotation$both, statAnnotation$X...., sep='')
+statAnnotation = statAnnotation[, -c(1:4)]
 
 mergedData$acoRound <- round(mergedData$acousticness)
 
@@ -752,7 +824,7 @@ p <- ggplot(acoDF, aes(x=category, y=Freq, fill=acoRound))+
   #geom_flat_violin(position = position_nudge(x = 0, y = 0),adjust = 0.4)+
   #geom_boxplot(aes(x = as.numeric(category)-0.1, y = value),outlier.shape = NA, alpha = 0.3, width = .1, colour = "BLACK") +
   #geom_point(position = position_jitter(width = .45), size = .1, alpha=0.02)+
-  ylab('Percentage')+xlab('')+
+  ylab('Percentage of acousticness')+xlab('')+
   geom_signif(
     y_position = c(1.1, 1.18, 1.26),
     comparisons = list(
@@ -768,4 +840,4 @@ p <- ggplot(acoDF, aes(x=category, y=Freq, fill=acoRound))+
   ggtitle('Acousticness') +
   theme(text = element_text(size=12))
 p
-ggsave('Three Way Comparison/acousticness.pdf', width = w, height = h, dpi=dpi)
+ggsave('Three Way Comparison/acousticness1312.pdf', width = w, height = h, dpi=dpi)
