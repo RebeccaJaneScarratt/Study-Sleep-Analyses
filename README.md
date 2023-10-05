@@ -3,6 +3,6 @@ This repository contains the scripts and data necessary to replicate the results
 
 SPD = Sleep Playlist Datset
 
-SSM = Spotify Sleep Music
+SSM = Spotify Study Music
 
 This project investigates the similarities between msuic that is used for sleep and music that isused for studying using tracks and features collected using the streaming service, Spotify.
